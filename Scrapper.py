@@ -8,6 +8,7 @@
 """
 
 import requests,json
+from bs4 import BeautifulSoup
 from abc import abstractmethod,ABCMeta
 
 class GenericScrapper(object):
@@ -35,12 +36,14 @@ class HttpbinScrapper(GenericScrapper):
                 return False,Handler.status_code
             
 if __name__=="__main__":
-    obj= HttpbinScrapper("http://httpbin.org/ip")
+    obj= HttpbinScrapper("http://httpbin.org/")
     (stat, data) = obj.start_scrapping_method()
     if stat:
         print "Connection Successful. Getting the complete page below."
-        print data.json()
-        
+        #print data.text   
+        soupHandler =BeautifulSoup(data.text,'html.parser')
+        for i in soupHandler.find_all('a'):
+            if i.get('href').startswith('http'):print i.get('href') 
     else:
         print "Failed connection."
         
